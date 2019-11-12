@@ -37,7 +37,7 @@ The Dashboard is the main entry point of the application. It behaves like a cock
 Default date range is 2 weeks - this means, that the data from the last 2 weeks is shown in the charts. (*actual date is faked as 9/1/2019*)<br>
 This is also indicated through the slider in the upper left corner. It's possible to view the data up to the last 6 weeks. The slider is only enabled in the Dashboard-tab.<br>
 On every chart it's possible to make a right-click to open a context-menu. Depending on the chart, the possible functions differ.<br>
-![Dashboard](/img/dashboard.png "Dashboard")
+![Dashboard](/img/dashboard.PNG "Dashboard")
 
 #### Full-Screen
 
