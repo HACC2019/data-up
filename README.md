@@ -31,7 +31,7 @@ The whole program is designed in a tab-layout, similar to a browser.
 
 ## Program description
 
-#### Dashboard
+### Dashboard
 
 The Dashboard is the main entry point of the application. It behaves like a cockpit to see relevant and actual data trends immediately.<br>
 Default date range is 2 weeks - this means, that the data from the last 2 weeks is shown in the charts. (*actual date is faked as 9/1/2019*)<br>
@@ -39,21 +39,22 @@ This is also indicated through the slider in the upper left corner. It's possibl
 On every chart it's possible to make a right-click to open a context-menu. Depending on the chart, the possible functions differ.<br>
 ![Dashboard](/img/dashboard.png "Dashboard")
 
-#### Full-Screen
+### Full-Screen
 
 Each chart can be viewed in Full-Screen. Watching a chart in Full-Screen also means, that the whole data set is visible. There is no date-range applied.<br>
 By making a right-click on a chart and a click on *Show in Full-Screen*, another tab opens where the chart is displayed. Now it's possible to switch between tabs and compare the values.<br>
 ![Full-Screen](/img/full_screen.png "Full-Screen")
 
-#### Zoom
+### Zoom
 
 Sometimes it's needed to get a more detailed view of the data, for example to look at the data of a single day.<br>
 Therefor a zooming function is implemented on the *Station Overview* and *Station X - Daily Usage* charts. It works by pressing the left button and drag the mouse to another position. After the mouse-button is released, the axis are changing and the selected data is centered in the chart. To reset the zoom view, either make a double-click on the chart or via the context-menu (right-click).<br>
 Zooming is possible in Dashboard and Full-Screen mode.<br>
-![Zoom](/img/zoom.png "During zoom")<br>
+![Zoom](/img/zoom.png "During zoom")<br><br>
+After zoom:<br>
 ![Zoom](/img/zoom2.png "After zoom")
 
-#### Additional info
+### Additional info
 Datapoints contain a Tooltip when the mouser moves over them. This is implemented to get some basic information about the charge cycles.<br>
 ![Tooltip](/img/tooltip.png "Tooltip")
 
