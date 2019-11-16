@@ -35,7 +35,8 @@ The whole program is designed in a tab-layout, similar to a browser.
 
 The Dashboard is the main entry point of the application. It behaves like a cockpit to see relevant and actual data trends immediately.<br>
 Default date range is 2 weeks - this means, that the data from the last 2 weeks is shown in the charts. (*actual date is faked as 9/1/2019*)<br>
-This is also indicated through the slider in the upper left corner. It's possible to view the data up to the last 6 weeks. The slider is only enabled in the Dashboard-tab.<br>
+This is also indicated through the slider in the upper left corner. It's possible to view the data up to the last 6 weeks or the whole data set.<br>
+It's also possible to filter data based on the duration of each charge cycle. Therefore the second slider is used to set the minimum charge cycle duration.<br>
 On every chart it's possible to make a right-click to open a context-menu. Depending on the chart, the possible functions differ.<br>
 ![Dashboard](/img/dashboard.png "Dashboard")
 
