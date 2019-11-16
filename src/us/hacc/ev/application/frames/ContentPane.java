@@ -12,16 +12,18 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -31,6 +33,7 @@ import javafx.util.StringConverter;
 import us.hacc.ev.application.charts.AdvancedScatterChart;
 import us.hacc.ev.application.charts.AdvancedStackedBarChart;
 import us.hacc.ev.application.charts.StationLineChart;
+import us.hacc.ev.data.ChartDataManager;
 import us.hacc.ev.data.DataManager;
 import us.hacc.ev.util.Tools;
 
@@ -41,7 +44,7 @@ public class ContentPane extends BorderPane
 	private AdvancedScatterChart stationTimeChartA, stationTimeChartAFullScreen, stationTimeChartB, stationTimeChartBFullScreen;
 	private AdvancedStackedBarChart stationBarChart, stationBarChartFullScreen;
 	private Calendar cal;
-	private Slider slider;
+	private Slider sliderWeeks, sliderMin;
 	private TabPane tabPane;
 	
 	public ContentPane()
@@ -74,13 +77,13 @@ public class ContentPane extends BorderPane
 	
 	private ToolBar createToolbar()
 	{
-		slider = new Slider(1, 7, 2);
-		slider.setShowTickLabels(true);
-		slider.setShowTickMarks(false);
-		slider.setMajorTickUnit(1);
-		slider.setMinorTickCount(0);
-		slider.setSnapToTicks(true);
-		slider.setLabelFormatter(new StringConverter<Double>() 
+		sliderWeeks = new Slider(1, 7, 2);
+		sliderWeeks.setShowTickLabels(true);
+		sliderWeeks.setShowTickMarks(false);
+		sliderWeeks.setMajorTickUnit(1);
+		sliderWeeks.setMinorTickCount(0);
+		sliderWeeks.setSnapToTicks(true);
+		sliderWeeks.setLabelFormatter(new StringConverter<Double>() 
 		{
 			public String toString(Double object) 
 			{	
@@ -101,7 +104,7 @@ public class ContentPane extends BorderPane
 			}
 		});
 		
-		slider.valueProperty().addListener(new ChangeListener<Number>() {
+		sliderWeeks.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
 			{
@@ -130,15 +133,75 @@ public class ContentPane extends BorderPane
 			}
 		});
 		
-		Label lblSlider = new Label("Show last <n> weeks:");
-		lblSlider.setId("lblSlider");
+		Label lblSliderWeek = new Label("Show last <n> weeks:");
+		lblSliderWeek.setId("lblSlider");
+		
+		Button btnTest = new Button("Test");
+		btnTest.setOnAction(event -> {
+			//ChartDataManager.lineChartSeries.clear();
+			ChartDataManager.createLineChartData(0.5);
+		});
+		
+		sliderMin = new Slider(0, 120, 0);
+		sliderMin.setShowTickLabels(true);
+		sliderMin.setShowTickMarks(false);
+		sliderMin.setMajorTickUnit(20);
+		sliderMin.setMinorTickCount(0);
+		sliderMin.setSnapToTicks(true);
+		
+		TextField tfSliderMin = new TextField();
+		
+		sliderMin.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+			{
+				if (newValue != null && (newValue.doubleValue()==0.0 || newValue.doubleValue()==20.0 || 
+						newValue.doubleValue()==40.0 || newValue.doubleValue()==60.0 || newValue.doubleValue()==80.0 ||
+						newValue.doubleValue()==100.0 || newValue.doubleValue() == 120.0 || 
+						(tfSliderMin.getText() != null && Double.parseDouble(tfSliderMin.getText()) == newValue.doubleValue())))
+				{
+					tfSliderMin.setText(String.valueOf(newValue));
+					ChartDataManager.createLineChartData(newValue.doubleValue());
+				}
+			}
+		});
+		
+		//tfSliderMin.textProperty().bind(sliderMin.valueProperty().asString());		
+		Button btnSliderMin = new Button("Set");
+		btnSliderMin.setOnAction(event -> {
+			try
+			{
+				double val = Double.parseDouble(tfSliderMin.getText());
+				sliderMin.setValue(val);
+			}
+			catch (Exception e)
+			{
+				//TODO show error lbl
+			}
+		});
+		tfSliderMin.setOnKeyPressed(event ->
+		{
+			if (event.getCode() == KeyCode.ENTER)
+			{
+				btnSliderMin.fire();
+			}			
+		});
+		tfSliderMin.setMaxWidth(60);
+		
+		Label lblSliderMin = new Label("Min. charging duration (minutes):");
+		lblSliderMin.setId("lblSlider");
+		
 		
 		ToolBar toolbar = new ToolBar();
 		toolbar.setId("content-pane-toolbar");
-		HBox hbox = new HBox(5, lblSlider, slider);
-		hbox.setAlignment(Pos.CENTER);
-		hbox.setId("content-pane-toolbar-hbox");
-		toolbar.getItems().add(hbox);
+		HBox hboxWeek = new HBox(5, lblSliderWeek, sliderWeeks);
+		hboxWeek.setAlignment(Pos.CENTER);
+		hboxWeek.setId("content-pane-toolbar-hbox");		
+		HBox hboxDuration = new HBox(5, lblSliderMin, sliderMin, tfSliderMin, btnSliderMin);
+		hboxDuration.setAlignment(Pos.CENTER);
+		hboxDuration.setId("content-pane-toolbar-hbox");
+		hboxDuration.setPadding(new Insets(0, 0, 0, 20));
+		toolbar.getItems().addAll(hboxWeek, hboxDuration);
 		return toolbar;
 	}
 	
@@ -151,45 +214,31 @@ public class ContentPane extends BorderPane
 		tabPane = new TabPane(dashboard);
 		tabPane.setSide(Side.BOTTOM);
 		tabPane.setTabClosingPolicy(TabClosingPolicy.ALL_TABS);
-		/*
-		tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
-		{
-			@Override
-			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue)
-			{
-				if (newValue.getText().equals("Dashboard"))
-				{
-					slider.setDisable(false);
-				}
-				else
-				{
-					slider.setDisable(true);
-				}
-			}
-		});*/
 	}
 	
 	private BorderPane createDashboard()
 	{
-		stationLineChart = DataManager.stationLineChart;
+		//stationLineChart = DataManager.stationLineChart;
+		stationLineChart = ChartDataManager.stationLineChart;
 		stationBarChart = DataManager.stationBarChart;
 		stationTimeChartA = DataManager.stationTimeChartA;
 		stationTimeChartB = DataManager.stationTimeChartB;
-		stationLineChart.getContextMenu().getItems().addAll(new SeparatorMenuItem(), createResetMenuItem(stationLineChart, true));
-		stationTimeChartA.getContextMenu().getItems().addAll(createResetMenuItem(stationTimeChartA, true));
-        stationTimeChartB.getContextMenu().getItems().addAll(createResetMenuItem(stationTimeChartB, true));		
-		stationLineChart.getContextMenu().getItems().addAll(new SeparatorMenuItem(), createFullscreenMenuItem(stationLineChart));
+		stationLineChart.getContextMenu().getItems().addAll(createResetMenuItem(stationLineChart));
+		stationTimeChartA.getContextMenu().getItems().addAll(createResetMenuItem(stationTimeChartA));
+        stationTimeChartB.getContextMenu().getItems().addAll(createResetMenuItem(stationTimeChartB));		
+		stationLineChart.getContextMenu().getItems().addAll(createFullscreenMenuItem(stationLineChart));
 		stationBarChart.getContextMenu().getItems().addAll(createFullscreenMenuItem(stationBarChart));
 		stationTimeChartA.getContextMenu().getItems().add(createFullscreenMenuItem(stationTimeChartA));
         stationTimeChartB.getContextMenu().getItems().add(createFullscreenMenuItem(stationTimeChartB));	
         
-        stationLineChartFullScreen = DataManager.stationLineChartFullScreen;
+        //stationLineChartFullScreen = DataManager.stationLineChartFullScreen;
+        stationLineChartFullScreen = ChartDataManager.stationLineChartFullScreen;
         stationBarChartFullScreen = DataManager.stationBarChartFullScreen;
         stationTimeChartAFullScreen = DataManager.stationTimeChartAFullScreen;
         stationTimeChartBFullScreen = DataManager.stationTimeChartBFullScreen;
-        stationLineChartFullScreen.getContextMenu().getItems().addAll(new SeparatorMenuItem(), createResetMenuItem(stationLineChartFullScreen, false));
-		stationTimeChartAFullScreen.getContextMenu().getItems().addAll(new SeparatorMenuItem(), createResetMenuItem(stationTimeChartAFullScreen, false));
-		stationTimeChartBFullScreen.getContextMenu().getItems().addAll(new SeparatorMenuItem(), createResetMenuItem(stationTimeChartBFullScreen, false));
+        stationLineChartFullScreen.getContextMenu().getItems().addAll(createResetMenuItem(stationLineChartFullScreen));
+		stationTimeChartAFullScreen.getContextMenu().getItems().addAll(createResetMenuItem(stationTimeChartAFullScreen));
+		stationTimeChartBFullScreen.getContextMenu().getItems().addAll(createResetMenuItem(stationTimeChartBFullScreen));
      
 		GridPane gp = new GridPane();
 		gp.setPadding(new Insets(10));
@@ -216,44 +265,18 @@ public class ContentPane extends BorderPane
 		return bp;
 	}
 	
-	private MenuItem createResetMenuItem(XYChart<?,?> chart, boolean isDashboardChart)
+	private MenuItem createResetMenuItem(XYChart<?,?> chart)
 	{
 		chart.setOnMouseReleased(event -> {
 			if (event.getClickCount() > 1)
 			{
-				if (isDashboardChart)
-				{
-					resetZoom(chart, (int) slider.getValue());
-				}
-				else
-				{
-					chart.getXAxis().setAutoRanging(true);
-					if (chart instanceof AdvancedScatterChart)
-					{
-						((NumberAxis)chart.getYAxis()).setLowerBound(0);
-						((NumberAxis)chart.getYAxis()).setUpperBound(24);
-						((NumberAxis)chart.getYAxis()).setTickUnit(1);
-					}
-				}	
+				resetZoom(chart, (int) sliderWeeks.getValue());
 			}
 		});
 		
 		MenuItem mItem = new MenuItem("Reset View");
 		mItem.setOnAction(event -> {
-			if (isDashboardChart)
-			{
-				resetZoom(chart, (int) slider.getValue());
-			}
-			else
-			{
-				chart.getXAxis().setAutoRanging(true);
-				if (chart instanceof AdvancedScatterChart)
-				{
-					((NumberAxis)chart.getYAxis()).setLowerBound(0);
-					((NumberAxis)chart.getYAxis()).setUpperBound(24);
-					((NumberAxis)chart.getYAxis()).setTickUnit(1);
-				}
-			}			
+			resetZoom(chart, (int) sliderWeeks.getValue());			
 		});
 		return mItem;
 	}
@@ -282,29 +305,29 @@ public class ContentPane extends BorderPane
 		if (title.equals("Station Overview")) //TODO temp !!!!!!!!!
 		{
 			tab.setContent(new BorderPane(stationLineChartFullScreen));
-			resetZoom(stationLineChartFullScreen, (int) slider.getValue());
+			resetZoom(stationLineChartFullScreen, (int) sliderWeeks.getValue());
 		}
 		else if (title.equals("Daytime Usage"))
 		{
 			tab.setContent(new BorderPane(stationBarChartFullScreen));
-			if ((int)slider.getValue() == 7)
+			if ((int)sliderWeeks.getValue() == 7)
 			{
 				stationBarChartFullScreen.prepareData(0, true);
 			}
 			else
 			{
-				stationBarChartFullScreen.prepareData((int)slider.getValue(), true);
+				stationBarChartFullScreen.prepareData((int)sliderWeeks.getValue(), true);
 			}
 		}
 		else if (title.equals("Station A - Daily Usage"))
 		{
 			tab.setContent(new BorderPane(stationTimeChartAFullScreen));
-			resetZoom(stationTimeChartAFullScreen, (int) slider.getValue());
+			resetZoom(stationTimeChartAFullScreen, (int) sliderWeeks.getValue());
 		}
 		else if (title.equals("Station B - Daily Usage"))
 		{
 			tab.setContent(new BorderPane(stationTimeChartBFullScreen));
-			resetZoom(stationTimeChartBFullScreen, (int) slider.getValue());
+			resetZoom(stationTimeChartBFullScreen, (int) sliderWeeks.getValue());
 		}
 		tabPane.getTabs().add(tab);
 		tabPane.getSelectionModel().select(tab);
@@ -312,6 +335,12 @@ public class ContentPane extends BorderPane
 	
 	private void resetZoom(XYChart<?,?> chart, int value)
 	{
+		if (chart instanceof AdvancedScatterChart)
+		{
+			((NumberAxis)chart.getYAxis()).setLowerBound(0);
+			((NumberAxis)chart.getYAxis()).setUpperBound(24);
+			((NumberAxis)chart.getYAxis()).setTickUnit(1);
+		}
 		if (value == 7)
 		{
 			chart.getXAxis().setAutoRanging(true);
@@ -324,13 +353,6 @@ public class ContentPane extends BorderPane
 			((NumberAxis)chart.getXAxis()).setUpperBound(today.getTime());
 			((NumberAxis)chart.getXAxis()).setTickUnit(Tools.DATE_DayInMillis);
 			cal.add(Calendar.DAY_OF_YEAR, (7*value));
-			
-			if (chart instanceof AdvancedScatterChart)
-			{
-				((NumberAxis)chart.getYAxis()).setLowerBound(0);
-				((NumberAxis)chart.getYAxis()).setUpperBound(24);
-				((NumberAxis)chart.getYAxis()).setTickUnit(1);
-			}
 		}
 	}
 }

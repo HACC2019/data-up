@@ -9,6 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
@@ -35,6 +36,7 @@ public class AdvancedScatterChart extends ScatterChart<Number, Number>
 	{
 		super(xAxis, yAxis);
 		setTitle(title);
+		setCursor(Cursor.CROSSHAIR);
 		HBox hboxLegend = new HBox(20);
 		hboxLegend.getStyleClass().add("chart-legend");
 		Rectangle rectLegend = new Rectangle(15, 2);

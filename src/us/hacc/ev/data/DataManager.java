@@ -49,7 +49,8 @@ public class DataManager extends HashMap<String, ArrayList<ChargeCycle>>
 
 	public void createCharts()
 	{
-		stationLineChart = new StationLineChart(createXAxis(true), new NumberAxis(0, 50, 5), true);
+		ChartDataManager cdm = new ChartDataManager();
+		//stationLineChart = new StationLineChart(createXAxis(true), new NumberAxis(0, 50, 5), true);
 		ElectricVehicle.progress.set(2);
 		stationBarChart = new AdvancedStackedBarChart(new CategoryAxis(), new NumberAxis(), false);
 		ElectricVehicle.progress.set(3);
@@ -58,13 +59,13 @@ public class DataManager extends HashMap<String, ArrayList<ChargeCycle>>
 		stationTimeChartB = new AdvancedScatterChart(createXAxis(true), new NumberAxis(0, 24, 1), "Station B - Daily Usage", "B");
 		ElectricVehicle.progress.set(5);
 		
-		stationLineChartFullScreen = new StationLineChart(createXAxis(false), new NumberAxis(0, 50, 5), true);	//TODO maybe in new thread?
+		//stationLineChartFullScreen = new StationLineChart(createXAxis(false), new NumberAxis(0, 50, 5), true);	//TODO maybe in new thread?
 		ElectricVehicle.progress.set(6);
 		stationBarChartFullScreen = new AdvancedStackedBarChart(new CategoryAxis(), new NumberAxis(), true); //TODO change back to true
 		ElectricVehicle.progress.set(7);
-		stationTimeChartAFullScreen = new AdvancedScatterChart(createXAxis(false), new NumberAxis(0, 24, 1), "Station A - Usage", "A");
+		stationTimeChartAFullScreen = new AdvancedScatterChart(createXAxis(false), new NumberAxis(0, 24, 1), "Station A - Daily Usage", "A");
 		ElectricVehicle.progress.set(8);
-		stationTimeChartBFullScreen = new AdvancedScatterChart(createXAxis(false), new NumberAxis(0, 24, 1), "Station B - Usage", "B");
+		stationTimeChartBFullScreen = new AdvancedScatterChart(createXAxis(false), new NumberAxis(0, 24, 1), "Station B - Daily Usage", "B");
 		ElectricVehicle.progress.set(9);
 	}
 	

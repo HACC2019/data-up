@@ -77,7 +77,7 @@
 
 .chart .axis-tick-mark {
 	-fx-stroke: black;
-    -fx-stroke-width: 1; 
+    -fx-stroke-width: 0.5; 
 }
 
 .chart .axis-label
